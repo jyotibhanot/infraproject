@@ -5,7 +5,6 @@ MAINTAINER Jyoti Bhanot <jyoti.bhanot30@gmail.com>
 RUN apk update && \
     apk --update add unzip &&\
     apk add --update openssl nginx && \
-    apk add --update tzdata && \
     mkdir /etc/nginx/certificates && \
     openssl req \
     	-x509 \
@@ -16,7 +15,6 @@ RUN apk update && \
     	-nodes \
     	-subj /CN=localhost && \
     mkdir /www && \
-    apk del tzdata && \
     rm -rf /var/cache/apk/*
     
 ADD https://s3.amazonaws.com/infra-assessment/static.zip /tmp/
