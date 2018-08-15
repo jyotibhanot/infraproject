@@ -32,20 +32,20 @@ The Main script is infraproject.sh whcih takes commandline arguments and perform
  - cd infraproject [User must be in the root folder (infraproject/) in order to run commands.]
  - ./infraproject  [Without any arguments, the script would install the prerequisites - docker, docker-compose]
 
-## [Staging]
+##### [Staging]
  - ./infraproject staging build [Builds docker images from dockerfiles placed in corresponding directories creating according to environment.]
  - ./infraproject staging up [Spawns containers for static and web components of the blog.]
  - ./infraproject staging down [Stops and removes all containers created for the environment.]
  
-## [Prod]
+##### [Prod]
  - ./infraproject production build [Builds docker images from dockerfiles placed in corresponding directories creating according to environment.]
  - ./infraproject production up [Spawns containers for static and web components of the blog.]
  - ./infraproject production down [Stops and removes all containers created for the environment.]
 
-## [Testing]
+##### [Testing]
  - ./infraproject test
 
-## [Benchmarking]
+##### [Benchmarking]
  - ./infraproject bench
 
 ### Running at scale
