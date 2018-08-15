@@ -1,0 +1,41 @@
+version: '2'
+services:
+  static:
+    hostname: static
+    build:
+      context: .
+      dockerfile: Dockerfile-static
+    environment:
+      - VIRTUAL_HOST=*/styles/*.*,*/images/*.*, https://*/styles/*.*, https://*/images/*.*
+      - VIRTUAL_HOST_WEIGHT=0
+      - FORCE_SSL=yes
+    ports:
+      - 80
+      - 443
+  web:
+    hostname: web
+    build:
+      context: .
+      dockerfile: Dockerfile-web
+    ports:
+      - 8080
+    environment:
+      - VIRTUAL_HOST=*/*.action,*/, https://*/*.action, https://*/
+      - VIRTUAL_HOST_WEIGHT=1
+      - FORCE_SSL=yes
+    volumes:
+      - ../data:/Users/dcameron/persistence
+  proxy:
+    image: dockercloud/haproxy:1.2.1
+    container_name: proxy
+    environment:
+      - DEFAULT_SSL_CERT=-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfJx1cbaaxnsc3\nqXQoDm7N5IMWv+tUwT0+8+cSjVyNKv6+VIz9l6XGzI8VzO1qhPft51XzzLZ6h682\n2OPaH+T3dziHqtq+v2vxrOJ7n357ebwPs6NX1MglouiY6au/9ih1q610b1XJ91F4\nM74ubLFGt1AuxLZLTtKTuoguXjVc3K6AvI9sd3H7FVsFPoCHSyLcZ6a+JLpPAifo\ne4PEV/badmNqnpHm73Ixaz88XD5me15OqvEUaGQGR23yXiTBE4ZIUQPN8fRfvy/1\n8oOdLx1SB9cpyK5qJ/P+SKOIYO67Cdq88hi40OXm9vM/gYbPJHs9ogV/21+rNn86\njLlbUVoLAgMBAAECggEBAJADl1BKN7UTym/ivWMIhXv9CJjK/R4yo8sX7z2q21sD\nr2m3+VHD56nX5FPmcCY5cCQqEu+HYxDKtkpISSxBPyxx1ZrAqfFGamyK7ZNoyGD5\nnGPpw/XwDcc0TrY4v63gOBZQ2F13aL8yDHLtucQOQ45myamVLCyHzyCl1jNOe1PU\np4iFoivwrAlMa37ga6dHUekzNXHuVxv4nWL7DwNCbI1v/7xcSBAbFaNcjinyy8Dc\nZATeCwqyk3Co/a+MfiaOViA9052Wy6rjDtQJjsfQa2Cv03iuCO2wq6qPkvqpzhl6\no6cqaZkUJZyKIESYT/lCz+k6joSb34604gGILxpv9gECgYEA8Yofa/BiAGLbthv7\nEpceED/0AiY0ntcP6k1sy8TGkwz7wgXQCw9pnO3HdrKwqgCFa/GkykchIVDlQRd5\ny9wEiR6xTd5ffR9JagKefTe8WrZ4stxiOzG7kt6tjGwPUYwplf7eiHWEtgE79HLR\nnJFHApiNuadSiAd64VU81FXjeQECgYEA7IMxgssiH9QbqpGViZnYoUbadnVzZxuI\n8HEjwg/jtULU/AZtLypzRVoYHp3YHhBD79NievqK/uwxweNVnqh99iTcVGAgSSHH\ny6IoqhPvXdEpLTiTZNjK8F801pyBNUADTQekDjw6xOxlZhplA+Cl/a75AAESxVUn\nW2Xjk8ccJwsCgYA6B2YPJ5xT3WxNryE90SJ+4u57ibRAqQiA0QMfXXIbqBXgAkd+\nMMC92/58zOdWoHNtgIuHsVkLSQUbA0nWqVBJpR8RxygHxnl7x49OJBLTdF1BE2Ni\nN0uKOIdXYiq3+8WN7MKH5DvzAg7mZqNnSxvVStNZ1BIm7i0eb70CgnP5AQKBgHsq\ngxEa2eV7XwD/mcEztgWe0UvZNETgqPqV4MpB3hJaAHJSom9qiub12ROwnYhibg6p\npWJnsRS6SdsvmTnrgtU5MuhZutZ62gIoq0aO5RuVPf1HtjJRV7W/ztNoYz0o3c8y\niHPFV9GPTerTGgHf7nFiulcPOAg9pSZKtC4UBYwrAoGAajlc0HnpaQnYjQXL1Rch\n4BbBbxG3a4xmKrCteOScWDj2kNpJcLMfhMZYsm6PMGspYHWEBSg9EPisG0ov4ILG\n8rcG0K0VvGMPoPZ9KF9PThj3kQTGv9fPyQ1rNzK7gxKex9311vcCZ0JAAC0oTJt0\nzyOY0xiAUNMr02ZOi8hEeTA=\n-----END PRIVATE KEY-----\n-----BEGIN CERTIFICATE-----\nMIIDQzCCAiugAwIBAgIJAKqO6kvqfILNMA0GCSqGSIb3DQEBCwUAMDgxCjAIBgNV\nBAMMASoxHTAbBgNVBAoMFE15IENvbXBhbnkgTmFtZSBMVEQuMQswCQYDVQQGEwJV\nUzAeFw0xODA4MTQyMDExNDVaFw0yMTA3MjkyMDExNDVaMDgxCjAIBgNVBAMMASox\nHTAbBgNVBAoMFE15IENvbXBhbnkgTmFtZSBMVEQuMQswCQYDVQQGEwJVUzCCASIw\nDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAN8nHVxtprGexzepdCgObs3kgxa/\n61TBPT7z5xKNXI0q/r5UjP2XpcbMjxXM7WqE9+3nVfPMtnqHrzbY49of5Pd3OIeq\n2r6/a/Gs4nuffnt5vA+zo1fUyCWi6Jjpq7/2KHWrrXRvVcn3UXgzvi5ssUa3UC7E\ntktO0pO6iC5eNVzcroC8j2x3cfsVWwU+gIdLItxnpr4kuk8CJ+h7g8RX9tp2Y2qe\nkebvcjFrPzxcPmZ7Xk6q8RRoZAZHbfJeJMEThkhRA83x9F+/L/Xyg50vHVIH1ynI\nrmon8/5Io4hg7rsJ2rzyGLjQ5eb28z+Bhs8kez2iBX/bX6s2fzqMuVtRWgsCAwEA\nAaNQME4wHQYDVR0OBBYEFJflnqIVmkWUhRsCvBcgKdyzeMppMB8GA1UdIwQYMBaA\nFJflnqIVmkWUhRsCvBcgKdyzeMppMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEL\nBQADggEBANGEene6BUaIvKTxEDKH3DH5y+9KDxaFBsp9qXB0F1AIQVB46JaeDQX4\nTlr9RPkhj89oXQN5xikMgZ/Qn/XBQr8EJS8RPSVb/7BP1eZprX0S3gSByDvRZpfe\no354Q88ehyED8SqDgXM11Xjz3dBV5UFQUtQRzJxNsVMOdMnlLXqGOn87+tglpble\nTXbYVUufYz7pNedhjlQFSwTH42VjD//SCGwDmu7z6j0qn9p7eujC5h58nyB8z4Q2\nQ3guIlbwz6Q5sRPz3XrQKJC9h1afihq2e/rICEz/f+s7FGMZxj0T+d2gRJOxn7aD\njZ8DLUN68YfIWna6R3WMWfYFw8MTCKg=\n-----END CERTIFICATE-----\n
+    links:
+      - static
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 443:443
+      - 1936:1936

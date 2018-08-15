@@ -1,0 +1,52 @@
+# AlpineLinux with a glibc-2.21 and Oracle Jdk 8
+FROM alpine:3.3
+MAINTAINER Jyoti Bhanot <jyoti.bhanot30@gmail.com>
+
+RUN apk --update add unzip curl ca-certificates tar
+RUN    curl -Ls https://github.com/trivago/rumi/raw/master/docker/bin/glibc-2.21-r2.apk > /tmp/glibc-2.21-r2.apk
+RUN    apk add --allow-untrusted /tmp/glibc-2.21-r2.apk
+
+# Java Version
+ENV JAVA_VERSION_MAJOR 8
+ENV JAVA_VERSION_MINOR 77
+ENV JAVA_VERSION_BUILD 03
+ENV JAVA_PACKAGE       jdk
+
+# Download and unarchive Java
+RUN mkdir /opt && curl -o /opt/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
+    https://mail-tp.fareoffice.com/java/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz &&\ 
+    tar -xzf /opt/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz -C /opt &&\
+    ln -s /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR} /opt/jdk &&\
+    rm -rf /opt/jdk/*src.zip \
+           /opt/jdk/lib/missioncontrol \
+           /opt/jdk/lib/visualvm \
+           /opt/jdk/lib/*javafx* \
+           /opt/jdk/jre/lib/plugin.jar \
+           /opt/jdk/jre/lib/ext/jfxrt.jar \
+           /opt/jdk/jre/bin/javaws \
+           /opt/jdk/jre/lib/javaws.jar \
+           /opt/jdk/jre/lib/desktop \
+           /opt/jdk/jre/plugin \
+           /opt/jdk/jre/lib/deploy* \
+           /opt/jdk/jre/lib/*javafx* \
+           /opt/jdk/jre/lib/*jfx* \
+           /opt/jdk/jre/lib/amd64/libdecora_sse.so \
+           /opt/jdk/jre/lib/amd64/libprism_*.so \
+           /opt/jdk/jre/lib/amd64/libfxplugins.so \
+           /opt/jdk/jre/lib/amd64/libglass.so \
+           /opt/jdk/jre/lib/amd64/libgstreamer-lite.so \
+           /opt/jdk/jre/lib/amd64/libjavafx*.so \
+           /opt/jdk/jre/lib/amd64/libjfx*.so
+
+# Set environment
+ENV JAVA_HOME /opt/jdk
+ENV PATH ${PATH}:${JAVA_HOME}/bin
+
+EXPOSE 8080
+
+#Add the web app and jetty runner
+WORKDIR /tip/
+ADD http://central.maven.org/maven2/org/mortbay/jetty/jetty-runner/7.6.5.v20120716/jetty-runner-7.6.5.v20120716.jar ./jetty-runner.jar    
+ADD https://s3.amazonaws.com/infra-assessment/companyNews.war  ./
+
+CMD java -jar jetty-runner.jar companyNews.war

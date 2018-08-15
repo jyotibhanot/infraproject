@@ -1,0 +1,22 @@
+version: '2'
+services:
+  web1:
+    image: staging_web
+    ports:
+      - 8080
+    volumes:
+      - ../data:/Users/jyoti/persistence
+  web2:
+    image: staging_web
+    ports:
+      - 8080
+    volumes:
+      - ../data:/Users/jyoti/persistence
+  static:
+    build: ./static/
+    links:
+      - web1
+      - web2
+    ports:
+      - 80:80
+      - 443:443
